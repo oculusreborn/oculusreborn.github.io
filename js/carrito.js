@@ -1,5 +1,5 @@
 
-const CARRITO_KEY = 'jasibe_carrito';
+const CARRITO_KEY = 'mi_tienda_carrito';
 
 function obtenerCarrito() {
   try { return JSON.parse(localStorage.getItem(CARRITO_KEY)) || []; }
