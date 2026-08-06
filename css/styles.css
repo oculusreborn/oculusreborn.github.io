@@ -1163,8 +1163,8 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .footer {
   background: #000000;
   color: rgba(255,255,255,0.85);
-  margin-top: 60px;
-  padding: 40px 24px 20px;
+  margin-top: 40px;
+  padding: 28px 24px 20px;
 }
 
 .footer__grid {
@@ -1189,7 +1189,18 @@ button { cursor: pointer; border: none; font-family: inherit; }
   line-height: 1.6;
   margin-bottom: 12px;
 }
-
+.footer__rrss {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: center;
+  gap: 12px;
+}
+.footer__rrss a svg {
+  display: block;      /* o inline-block */
+  width: 28px;
+  height: 28px;
+}
 .footer__whatsapp-link {
   display: inline-flex;
   align-items: center;

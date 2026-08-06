@@ -78,6 +78,11 @@
     height: 50px;
   }
 
+  .footer__col a svg {
+    width: 16px;
+    height: 16px;
+}
+
   .seccion-titulo { font-size: 17px; }
 }
 
