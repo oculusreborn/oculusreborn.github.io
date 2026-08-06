@@ -5,7 +5,7 @@ const CONFIG = {
 
   whatsappDisplay: '5555-5555',
 
-  apiUrl: 'https://script.google.com/macros/s/AKfycbxFenM_RiFsV9hDrr17uupY175IoTxN8dHIuCfGJM-bTQQ1ijH5FBXxcCH45ZATae--/exec',
+  apiUrl: 'https://script.google.com/macros/s/AKfycbxOPFZyv01MUCVeelKbnkKunXLYey3LPf6a4dry_MT8lG4Ar8zXwFCBL97YbYVo-Hvg_A/exec',
 };
 
 document.addEventListener('DOMContentLoaded', () => {
