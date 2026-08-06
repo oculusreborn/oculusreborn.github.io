@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Oculus Reborn - Producto. Consulta por WhatsApp.">
+  <title>Detalle de Producto</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Oculus Reborn">
+  <meta property="og:title" content="Catálogo de Productos">
+  <meta property="og:description" content="Oculus Reborn - Producto. Consulta por WhatsApp.">
+  <meta property="og:image" content="img/preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Catálogo de Productos">
+  <meta name="twitter:description" content="Oculus Reborn - Producto. Consulta por WhatsApp.">
+  <meta name="twitter:image" content="img/preview.png">
+
+  <link rel="icon" type="image/png" href="img/fav.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#000000">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=13">
+  <link rel="stylesheet" href="css/responsive.css?v=13">
+  <style>
+    .detalle-contenedor {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .galeria {
+      position: sticky;
+      top: calc(var(--navbar-height) + var(--categorias-height) + 16px);
+      display: flex;
+      gap: 12px;
+    }
+
+    .galeria__miniaturas {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 72px;
+      flex-shrink: 0;
+    }
+
+    .miniatura {
+      width: 72px;
+      height: 72px;
+      border-radius: 6px;
+      border: 2px solid var(--color-borde);
+      overflow: hidden;
+      cursor: pointer;
+      padding: 0;
+      background: #ffffff;
+      transition: border-color 0.2s;
+    }
+
+    .miniatura.activa { border-color: var(--color-primario); }
+    .miniatura:hover { border-color: var(--color-primario); }
+
+    .miniatura img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .galeria__principal {
+      flex: 1;
+      position: relative;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #foto-principal {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.1s ease-out;
+      cursor: zoom-in;
+      will-change: transform;
+    }
+
+    .galeria__nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      color: var(--color-texto);
+      transition: background 0.2s;
+    }
+
+    .galeria__nav:hover { background: white; }
+    .galeria__nav--prev { left: 8px; }
+    .galeria__nav--next { right: 8px; }
+
+    .producto-info { display: flex; flex-direction: column; gap: 16px; }
+
+    .breadcrumb {
+      font-size: 13px;
+      color: var(--color-texto-secundario);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .breadcrumb a { color: var(--color-primario); }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .producto-info__id {
+      font-size: 12px;
+      color: var(--color-texto-secundario);
+      background: var(--color-fondo);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .producto-info__nombre {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-texto);
+      line-height: 1.3;
+    }
+
+    .producto-info__precios {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .producto-info__precio {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-texto);
+    }
+
+    .producto-info__precio--oferta { color: var(--color-primario); }
+
+    .producto-info__precio-anterior {
+      font-size: 18px;
+      color: var(--color-precio-anterior);
+      text-decoration: line-through;
+    }
+
+    .producto-info__badge-oferta {
+      background: var(--color-secundario);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .producto-info__descripcion {
+      font-size: 14px;
+      color: var(--color-texto-secundario);
+      line-height: 1.6;
+      padding: 16px;
+      background: var(--color-fondo);
+      border-radius: 8px;
+      border-left: 3px solid var(--color-primario);
+    }
+
+    .producto-info__btn-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      background: var(--color-success);
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: background 0.2s;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .producto-info__btn-wa:hover { background: var(--color-success-hover); }
+
+    .pdp__btn-compartir {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 16px;
+      background: transparent;
+      color: var(--color-texto);
+      border: 1.5px solid var(--color-borde);
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .pdp__btn-compartir:hover { background: var(--color-fondo); border-color: #aaa; }
+
+    .producto-info__servicios {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px;
+      background: var(--color-fondo);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--color-texto-secundario);
+    }
+
+    .producto-info__servicios span { display: flex; align-items: center; gap: 8px; }
+
+    @media (max-width: 768px) {
+      .detalle-contenedor {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .galeria {
+        position: static;
+        flex-direction: column-reverse;
+      }
+
+      .galeria__miniaturas {
+        flex-direction: row;
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .miniatura { flex-shrink: 0; }
+
+      .producto-info__precio { font-size: 26px; }
+    }
+
+    .pdp__badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pdp__ahorro {
+      background: var(--color-success); color: #fff; font-size: 13px; font-weight: 700;
+      padding: 4px 10px; border-radius: 6px;
+    }
+    .pdp__off {
+      background: var(--color-texto); color: #fff; font-size: 13px; font-weight: 700;
+      padding: 4px 10px; border-radius: 6px;
+    }
+    .pdp__nota { font-size: 12px; color: var(--color-texto-secundario); margin-top: -8px; }
+
+    .pdp__compra { display: flex; gap: 10px; align-items: stretch; }
+    .pdp__qty {
+      display: none; align-items: center; border: 1.5px solid var(--color-borde);
+      border-radius: 8px; overflow: hidden; flex-shrink: 0;
+    }
+    .pdp__qty button {
+      background: var(--color-fondo); border: none; width: 40px; align-self: stretch;
+      font-size: 20px; font-weight: 700; color: var(--color-primario); cursor: pointer;
+    }
+    .pdp__qty button:hover { background: #e6edf7; }
+    .pdp__qty input {
+      width: 44px; text-align: center; border: none; font-size: 16px; font-weight: 600;
+      font-family: inherit; color: var(--color-texto); outline: none;
+    }
+    .pdp__add {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--color-primario); color: #fff; border: none; border-radius: 8px;
+      padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: background 0.2s;
+    }
+    .pdp__add:hover { background: var(--color-primario-hover); }
+
+    .pdp__timer {
+      background: #000;
+      border: 2px solid var(--color-primario);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 4px 0 4px;
+    }
+    .pdp__timer__label {
+      display: block;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .pdp__timer__cajas { display: flex; gap: 8px; justify-content: center; }
+    .timer-caja {
+      display: flex; flex-direction: column; align-items: center;
+      background: var(--color-primario);
+      border-radius: 8px;
+      padding: 8px 0;
+      min-width: 58px;
+    }
+    .timer-caja strong {
+      font-size: 24px; font-weight: 700; color: #fff; line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-caja span {
+      font-size: 10px; color: rgba(255,255,255,0.85); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-top: 4px;
+    }
+    .pdp__timer__fin {
+      display: block; color: #fff; font-weight: 700; text-align: center; font-size: 14px;
+    }
+
+    .pdp__info {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 16px; background: var(--color-fondo); border-radius: 8px;
+      font-size: 14px; color: var(--color-texto);
+    }
+    .pdp__info > div { display: flex; align-items: center; gap: 10px; }
+    .pdp__info svg { color: var(--color-primario); flex-shrink: 0; }
+
+    .relacionados { max-width: 1280px; margin: 0 auto; padding: 10px 16px 40px; }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="navbar__logo" aria-label="Inicio">
+      <img src="img/logo.png" alt="Oculus Reborn" class="navbar__logo-img">
+    </a>
+
+    <form class="navbar__busqueda" onsubmit="event.preventDefault(); window.location='index.html?q='+encodeURIComponent(this.q.value)">
+      <input type="text" name="q" placeholder="Buscar productos..." autocomplete="off">
+      <button type="submit" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </form>
+
+    <button class="navbar__carrito" onclick="abrirCarrito()" aria-label="Ver cotización">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="carrito-contador" id="carrito-contador">0</span>
+    </button>
+
+    <a href="index.html" class="navbar__menu-btn" style="display:flex; align-items:center;" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+    </a>
+  </header>
+
+  <div class="categorias-bar" style="justify-content:flex-start;">
+    <a href="index.html" style="font-size:13px; color:var(--color-texto-secundario); display:flex; align-items:center; gap:4px; padding: 0 8px;">
+      ← Volver
+    </a>
+  </div>
+
+  <div class="detalle-contenedor" id="detalle-contenedor">
+
+    <div style="grid-column:1/-1; display:flex; justify-content:center; padding:60px;">
+      <div class="loading"><div class="spinner"></div><span>Cargando producto...</span></div>
+    </div>
+  </div>
+
+  <section class="relacionados" id="relacionados" style="display:none;">
+    <div class="relacionados__inner">
+      <h2 class="seccion-titulo">También te puede interesar</h2>
+      <div class="productos-grid" id="relacionados-grid"></div>
+    </div>
+  </section>
+
+  <a href="https://wa.me/50494785701" target="_blank" class="whatsapp-float js-wa-link" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <script src="js/config.js?v=13"></script>
+  <script src="js/util.js?v=13"></script>
+  <script src="js/whatsapp.js?v=13"></script>
+  <script src="js/carrito.js?v=13"></script>
+  <script src="js/galeria.js?v=13"></script>
+  <script>
+    const CACHE_KEY = 'mi_tienda_productos';
+    const API_URL = CONFIG.apiUrl;
+    let TODOS = [];
+    let PRODUCTO_ACTUAL = null;
+
+    function convertirLinkDrive(url, ancho = 800) {
+      const m = (url || '').match(/\/d\/([a-zA-Z0-9_-]+)/);
+      return m ? `https://lh3.googleusercontent.com/d/${m[1]}=w${ancho}` : url;
+    }
+
+    async function cargarDesdeSheets() {
+      const res = await fetch(`${API_URL}?tipo=productos`);
+      const filas = await res.json();
+      return filas.map(raw => {
+        const f = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k.toLowerCase(), v]));
+        return {
+          id:              String(f.id || ''),
+          nombre:          String(f.nombre || ''),
+          precio:          parseFloat(f.precio) || 0,
+          precio_anterior: (f.precio_anterior !== '' && f.precio_anterior !== null && f.precio_anterior !== undefined)
+                             ? parseFloat(f.precio_anterior) : null,
+          categoria:       String(f.categoria || ''),
+          descripcion:     String(f.descripcion || ''),
+          foto1:           String(f.foto1 || ''),
+          foto2:           String(f.foto2 || ''),
+          foto3:           String(f.foto3 || ''),
+          foto4:           String(f.foto4 || ''),
+          activo:          f.activo === true || String(f.activo).toUpperCase() === 'TRUE',
+          destacado:       f.destacado === true || String(f.destacado).toUpperCase() === 'TRUE',
+          regalia:         String(f.regalia || ''),
+          cantidad:        parsearCantidad(f.cantidad),
+          final_oferta:    f.final_oferta || '',
+        };
+      });
+    }
+
+    function leerCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const { ts, datos } = JSON.parse(raw);
+        if (Date.now() - ts > 30 * 60 * 1000) return null;
+        return datos;
+      } catch { return null; }
+    }
+
+    async function cargarProducto() {
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) { window.location = 'index.html'; return; }
+
+      let productos = leerCache();
+      if (!productos) {
+        try { productos = await cargarDesdeSheets(); }
+        catch (e) {
+          try { const r = await fetch('data/productos.json'); productos = await r.json(); }
+          catch { productos = []; }
+        }
+      }
+      TODOS = productos.filter(p => p.activo === true || p.activo === 'TRUE');
+
+      const producto = TODOS.find(p => p.id === id);
+      if (!producto) { window.location = 'index.html'; return; }
+
+      PRODUCTO_ACTUAL = producto;
+      document.title = `${producto.nombre} — Oculus Reborn`;
+      renderizarDetalle(producto);
+      renderizarRelacionados(producto);
+    }
+
+    function cambiarCantidadDetalle(delta) {
+      const input = document.getElementById('cantidad-detalle');
+      let n = (parseInt(input.value) || 1) + delta;
+      if (n < 1) n = 1;
+      const tope = (PRODUCTO_ACTUAL && PRODUCTO_ACTUAL.cantidad != null) ? PRODUCTO_ACTUAL.cantidad : Infinity;
+      if (n > tope) { n = tope; mostrarToast(`Solo hay ${tope} unidades disponibles`); }
+      input.value = n;
+    }
+
+    function agregarDetalleAlCarrito() {
+      const n = parseInt(document.getElementById('cantidad-detalle').value) || 1;
+      const foto = PRODUCTO_ACTUAL.foto1 ? convertirLinkDrive(PRODUCTO_ACTUAL.foto1, 600) : '';
+      agregarAlCarrito(PRODUCTO_ACTUAL.id, PRODUCTO_ACTUAL.nombre, PRODUCTO_ACTUAL.precio, n, foto, PRODUCTO_ACTUAL.cantidad);
+    }
+
+    async function compartirProducto(nombre) {
+      const id = new URLSearchParams(window.location.search).get('id') || '';
+      const urlCompartir = `${CONFIG.apiUrl}?compartir=${encodeURIComponent(id)}`;
+      const urlDirecta   = window.location.href;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: `${nombre} — Oculus Reborn`, text: `Mira este producto en Oculus Reborn: ${nombre}`, url: urlCompartir });
+        } catch (_) {}
+      } else {
+        await navigator.clipboard.writeText(urlDirecta);
+        mostrarToast('Link copiado al portapapeles');
+      }
+    }
+
+    function renderizarRelacionados(p) {
+      const lista = TODOS.filter(x => x.categoria === p.categoria && x.id !== p.id).slice(0, 8);
+      if (lista.length === 0) return;
+      document.getElementById('relacionados-grid').innerHTML = lista.map(crearCardRelacionado).join('');
+      document.getElementById('relacionados').style.display = 'block';
+    }
+
+    function crearCardRelacionado(p) {
+      const oferta = p.precio_anterior && p.precio_anterior > p.precio;
+      const desc = oferta ? Math.round((1 - p.precio / p.precio_anterior) * 100) : 0;
+      const fotoURL = p.foto1 ? convertirLinkDrive(p.foto1, 600) : null;
+      const fotoHTML = fotoURL
+        ? `<img src="${escaparHTML(fotoURL)}" alt="${escaparHTML(p.nombre)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;foto-placeholder&quot;>Sin foto</div>'">`
+        : '<div class="foto-placeholder"><span>Sin foto</span></div>';
+      const regaliaHTML = p.regalia
+        ? `<div class="regalia-overlay"><img src="${escaparHTML(convertirLinkDrive(p.regalia, 200))}" alt="Regalo incluido" class="regalia-overlay__img" loading="lazy"></div>`
+        : '';
+      const precioAnt = oferta ? `<span class="producto-card__precio-anterior">$ ${p.precio_anterior.toLocaleString('es-CO')}</span>` : '';
+      const agotadoRel = estaAgotado(p.cantidad);
+      const stockRel = etiquetaStock(p.cantidad);
+      const botonRel = agotadoRel
+        ? `<button class="producto-card__btn-cotizar producto-card__btn-cotizar--agotado" disabled onclick="event.stopPropagation();">Agotado</button>`
+        : `<button class="producto-card__btn-cotizar" onclick="event.stopPropagation(); agregarAlCarrito('${escaparArg(p.id)}','${escaparArg(p.nombre)}',${p.precio},1,'${escaparArg(fotoURL || '')}',${p.cantidad === null ? 'null' : p.cantidad})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              Añadir a cotización
+            </button>`;
+      return `
+        <div class="producto-card" onclick="window.location='producto.html?id=${escaparArg(p.id)}'">
+          ${oferta ? `<span class="producto-card__badge producto-card__badge--oferta">-${desc}%</span>` : ''}
+          <div class="producto-card__foto">${fotoHTML}${regaliaHTML}</div>
+          <div class="producto-card__info">
+            <span class="producto-card__categoria">${escaparHTML(p.categoria)} · <span style="font-weight:600;color:#1B3A6B;">${escaparHTML(p.id)}</span></span>
+            <h3 class="producto-card__nombre">${escaparHTML(p.nombre)}</h3>
+            <div class="producto-card__precios">
+              <span class="producto-card__precio ${oferta ? 'producto-card__precio--oferta' : ''}">$ ${p.precio.toLocaleString('es-CO')}</span>
+              ${precioAnt}
+            </div>
+            ${stockRel}
+            ${botonRel}
+          </div>
+        </div>`;
+    }
+
+    function renderizarDetalle(p) {
+      const tieneOferta = p.precio_anterior && p.precio_anterior > p.precio;
+      const descuento = tieneOferta ? Math.round((1 - p.precio / p.precio_anterior) * 100) : 0;
+      const ahorro = tieneOferta ? (p.precio_anterior - p.precio) : 0;
+      const linkWA = generarLinkWhatsApp(p.nombre, p.precio);
+
+      const agotado = estaAgotado(p.cantidad);
+      const stockDetalleHTML =
+        agotado ? '<p class="pdp__stock pdp__stock--agotado">Agotado por el momento</p>'
+        : (p.cantidad !== null && p.cantidad <= STOCK_UMBRAL)
+          ? `<p class="pdp__stock pdp__stock--bajo">🔥 ¡Solo quedan ${p.cantidad}!</p>`
+          : '';
+
+      const fechaFin = parsearFecha(p.final_oferta);
+      const mostrarTimer = fechaFin && fechaFin.getTime() > Date.now();
+      const timerHTML = mostrarTimer ? `
+        <div class="pdp__timer" id="oferta-timer">
+          <span class="pdp__timer__label">⏰ La oferta termina en:</span>
+          <div class="pdp__timer__cajas">
+            <div class="timer-caja"><strong id="t-dias">00</strong><span>Días</span></div>
+            <div class="timer-caja"><strong id="t-horas">00</strong><span>Horas</span></div>
+            <div class="timer-caja"><strong id="t-min">00</strong><span>Min</span></div>
+            <div class="timer-caja"><strong id="t-seg">00</strong><span>Seg</span></div>
+          </div>
+        </div>` : '';
+
+      const badges = tieneOferta ? `
+        <div class="pdp__badges">
+          <span class="pdp__ahorro">Ahorras $ ${ahorro.toLocaleString('es-CO')}</span>
+          <span class="pdp__off">${descuento}% OFF</span>
+        </div>` : '';
+
+      const precioAnterior = tieneOferta
+        ? `<span class="producto-info__precio-anterior">$ ${p.precio_anterior.toLocaleString('es-CO')}</span>`
+        : '';
+
+      document.getElementById('detalle-contenedor').innerHTML = `
+        <!-- Galería -->
+        <div class="galeria" id="galeria-contenedor">
+          <div class="galeria__miniaturas" id="miniaturas"></div>
+          <div class="galeria__principal">
+            <img id="foto-principal" src="" alt="${escaparHTML(p.nombre)}" loading="eager">
+            <button class="galeria__nav galeria__nav--prev" onclick="fotoAnterior()" aria-label="Anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="galeria__nav galeria__nav--next" onclick="fotoSiguiente()" aria-label="Siguiente">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="producto-info">
+          <nav class="breadcrumb" aria-label="Ruta">
+            <a href="index.html">Inicio</a>
+            <span>›</span>
+            <a href="index.html">${escaparHTML(p.categoria)}</a>
+            <span>›</span>
+            <span>${escaparHTML(p.nombre)}</span>
+          </nav>
+
+          <h1 class="producto-info__nombre">${escaparHTML(p.nombre)}</h1>
+
+          ${badges}
+
+          <div class="producto-info__precios">
+            <span class="producto-info__precio ${tieneOferta ? 'producto-info__precio--oferta' : ''}">$ ${p.precio.toLocaleString('es-CO')}</span>
+            ${precioAnterior}
+          </div>
+          ${stockDetalleHTML}
+
+          <div class="producto-info__servicios">
+            <span>📦 Envíos a nivel nacional</span>
+          </div>
+
+          ${timerHTML}
+
+          ${p.descripcion ? `<p class="producto-info__descripcion">${escaparHTML(p.descripcion)}</p>` : ''}
+
+          ${agotado
+            ? `<div class="pdp__compra">
+                 <button class="pdp__add pdp__add--agotado" disabled>Agotado por el momento</button>
+               </div>`
+            : `<div class="pdp__compra">
+              <div class="pdp__qty">
+                   <button onclick="cambiarCantidadDetalle(-1)" aria-label="Restar">−</button>
+                   <input id="cantidad-detalle" type="text" value="1" inputmode="numeric" readonly>
+                   <button onclick="cambiarCantidadDetalle(1)" aria-label="Sumar">+</button>
+                 </div>
+                 <button class="pdp__add" onclick="agregarDetalleAlCarrito()">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                   Añadir a cotización
+                 </button>
+               </div>`}
+
+          <a href="${linkWA}" target="_blank" class="producto-info__btn-wa">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Cotizar ahora por WhatsApp
+          </a>
+
+          <button class="pdp__btn-compartir" onclick="compartirProducto('${escaparArg(p.nombre)}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartir producto
+          </button>
+
+          <div class="pdp__info">
+
+            <div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="20" height="20"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              <span>Código: <strong>${escaparHTML(p.id)}</strong></span>
+            </div>
+          </div>
+
+          ${p.regalia ? `
+          <div class="pdp__regalia">
+            <span class="pdp__regalia__label">🎁 Incluye de regalo</span>
+            <img src="${escaparHTML(convertirLinkDrive(p.regalia, 200))}" alt="Regalo incluido" class="pdp__regalia__img" loading="lazy">
+          </div>` : ''}
+
+          
+        </div>
+      `;
+
+      iniciarGaleria(p);
+      iniciarZoomImagen();
+      if (mostrarTimer) iniciarContador(fechaFin);
+    }
+
+    function iniciarZoomImagen() {
+      const wrap = document.querySelector('.galeria__principal');
+      const img  = document.getElementById('foto-principal');
+      if (!img || !wrap) return;
+
+      function posDesde(clientX, clientY) {
+        const r = wrap.getBoundingClientRect();
+        const x = Math.min(100, Math.max(0, ((clientX - r.left)  / r.width)  * 100));
+        const y = Math.min(100, Math.max(0, ((clientY - r.top)   / r.height) * 100));
+        return { x, y };
+      }
+
+      wrap.addEventListener('mousemove', e => {
+        const { x, y } = posDesde(e.clientX, e.clientY);
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = 'scale(2.5)';
+      });
+      wrap.addEventListener('mouseleave', () => {
+        img.style.transform = '';
+        img.style.transformOrigin = '';
+      });
+
+      let tocando = false;
+      wrap.addEventListener('touchstart', e => {
+        if (e.touches.length !== 1) return;
+        tocando = true;
+        const { x, y } = posDesde(e.touches[0].clientX, e.touches[0].clientY);
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = 'scale(2.5)';
+      }, { passive: true });
+
+      wrap.addEventListener('touchmove', e => {
+        if (!tocando || e.touches.length !== 1) return;
+        const { x, y } = posDesde(e.touches[0].clientX, e.touches[0].clientY);
+        img.style.transformOrigin = `${x}% ${y}%`;
+      }, { passive: true });
+
+      wrap.addEventListener('touchend', () => {
+        tocando = false;
+        img.style.transform = '';
+        img.style.transformOrigin = '';
+      });
+    }
+
+    function parsearFecha(valor) {
+      if (!valor) return null;
+
+      const m = String(valor).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m) {
+        const d = new Date(+m[3], +m[2] - 1, +m[1], 23, 59, 59);
+        if (!isNaN(d.getTime())) return d;
+      }
+      const d2 = new Date(valor);
+      if (!isNaN(d2.getTime())) return d2;
+      return null;
+    }
+
+    let timerInterval = null;
+    function iniciarContador(fechaFin) {
+      const cont = document.getElementById('oferta-timer');
+      if (!cont) return;
+      if (timerInterval) clearInterval(timerInterval);
+      const dosDig = n => String(n).padStart(2, '0');
+      function tick() {
+        const diff = fechaFin.getTime() - Date.now();
+        if (diff <= 0) {
+          clearInterval(timerInterval);
+          cont.innerHTML = '<span class="pdp__timer__fin">⏰ Oferta finalizada</span>';
+          return;
+        }
+        const dias  = Math.floor(diff / 86400000);
+        const horas = Math.floor((diff % 86400000) / 3600000);
+        const min   = Math.floor((diff % 3600000) / 60000);
+        const seg   = Math.floor((diff % 60000) / 1000);
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = dosDig(v); };
+        set('t-dias', dias); set('t-horas', horas); set('t-min', min); set('t-seg', seg);
+      }
+      tick();
+      timerInterval = setInterval(tick, 1000);
+    }
+
+    cargarProducto();
+  </script>
+</body>
+</html>

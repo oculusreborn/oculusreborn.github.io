@@ -1,0 +1,88 @@
+
+@media (max-width: 1024px) {
+  .productos-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .footer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .navbar__whatsapp span { display: none; }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: 56px;
+    --categorias-height: 44px;
+  }
+
+  .productos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .navbar__busqueda { max-width: none; }
+
+  .navbar__whatsapp { display: none; }
+
+  .navbar__menu-btn { display: flex; }
+
+  .categorias-bar { display: none; }
+
+  body { padding-top: var(--navbar-height); }
+
+  .footer__grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .productos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .producto-card__foto {
+    aspect-ratio: 1 / 1;
+  }
+
+  .producto-card__info { padding: 11px; gap: 5px; }
+
+  .producto-card__categoria { font-size: 10px; }
+
+  .producto-card__nombre { font-size: 12px; }
+
+  .producto-card__precio { font-size: 18px; }
+
+  .producto-card__btn,
+  .producto-card__btn-cotizar { font-size: 12.5px; padding: 9px; gap: 5px; font-weight: 700; }
+
+  .producto-card__badge { font-size: 9px; padding: 2px 6px; }
+
+  .producto-card__badge--oferta { width: 34px; height: 34px; font-size: 9px; }
+
+  .main { padding: 16px 10px; }
+
+  .whatsapp-float {
+    bottom: 16px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .seccion-titulo { font-size: 17px; }
+}
+
+@media (min-width: 1280px) {
+  .productos-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

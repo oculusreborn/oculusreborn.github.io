@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Oculus Reborn - Productos. Consulta por WhatsApp.">
+  <title>Oculus Reborn — Catálogo de Productos</title>
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Oculus Reborn">
+  <meta property="og:title" content="Oculus Reborn — Catálogo de Productos">
+  <meta property="og:description" content="Productos. Consulta por WhatsApp.">
+  <meta property="og:image" content="img/preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Oculus Reborn — Catálogo de Productos">
+  <meta name="twitter:description" content="Productos. Consulta por WhatsApp.">
+  <meta name="twitter:image" content="img/preview.png">
+
+
+  <link rel="icon" type="image/png" href="img/fav.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
+ 
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#000000">
+  <link rel="canonical" href="">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Oculus Reborn",
+    "description": "Oculus Reborn - Catálogo de productos. Consulta por WhatsApp.",
+    "image": "img/preview.png",
+    "url": "",
+    "telephone": "+",
+    "areaServed": "",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "",
+      "addressRegion": "",
+      "addressCountry": ""
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=13">
+  <link rel="stylesheet" href="css/responsive.css?v=13">
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="navbar__logo" aria-label="Inicio">
+      <img src="img/logo.png" alt="Oculus Reborn" class="navbar__logo-img">
+    </a>
+
+    <form class="navbar__busqueda" id="busqueda-form">
+      <input
+        type="text"
+        id="busqueda-input"
+        placeholder="Buscar productos..."
+        autocomplete="off"
+        aria-label="Buscar productos"
+      >
+      <button type="submit" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </form>
+
+    <button class="navbar__carrito" onclick="abrirCarrito()" aria-label="Ver cotización">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="carrito-contador" id="carrito-contador">0</span>
+    </button>
+
+    <button class="navbar__menu-btn" onclick="toggleMenuMovil()" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav class="categorias-bar" id="categorias-desktop" aria-label="Categorías"></nav>
+
+  <nav class="menu-movil" id="menu-movil" aria-label="Menú de categorías">
+    <div class="menu-movil__header">
+      <span class="menu-movil__titulo">Categorías</span>
+      <button class="menu-movil__cerrar" onclick="cerrarMenuMovil()" aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="26" height="26">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="menu-movil__lista" id="categorias-movil"></div>
+  </nav>
+
+  <section class="carrusel" aria-label="Promociones">
+
+    <div class="carrusel__track" id="carrusel-track"></div>
+
+    <button class="carrusel__nav carrusel__nav--prev" id="carrusel-prev" aria-label="Banner anterior">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="carrusel__nav carrusel__nav--next" id="carrusel-next" aria-label="Banner siguiente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+
+    <div class="carrusel__dots" id="carrusel-dots"></div>
+  </section>
+
+  <main class="main">
+
+    <section class="destacados" id="seccion-destacados" style="display:none;">
+      <div class="destacados__header">
+        <h2 class="destacados__titulo">🔥 Ofertas Especiales</h2>
+        <div class="destacados__nav">
+          <button class="destacados__flecha" id="destacados-prev" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="destacados__flecha" id="destacados-next" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="destacados-track" id="destacados-grid"></div>
+    </section>
+
+    <section>
+      <div class="filtros-bar">
+        <h2 class="seccion-titulo" id="titulo-catalogo" style="margin:0; flex:1;">Todos los Productos</h2>
+        <p class="filtros-bar__info">Mostrando <span id="contador-productos">0</span> productos</p>
+      </div>
+      <div class="productos-grid" id="productos-grid">
+        <div class="loading"><div class="spinner"></div><span>Cargando productos...</span></div>
+      </div>
+      <nav class="paginacion" id="paginacion" aria-label="Paginación"></nav>
+    </section>
+
+  </main>
+
+  <section class="sucursales" id="encuentranos" style="display:none;">
+    <div class="sucursales__inner">
+      <h2 class="seccion-titulo">📍 Encuéntranos</h2>
+
+      <div class="sucursales__layout">
+        <select class="sucursales__select" id="sucursales-select" aria-label="Elegir sucursal"></select>
+
+        <div class="sucursales__lista" id="sucursales-lista"></div>
+
+        <div class="sucursales__mapa">
+          <iframe
+            id="mapa-sucursal"
+            src=""
+            style="border:0; display:block; width:100%; height:100%;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Ubicación de sucursal">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+ 
+    <div class="footer__bottom">
+      <span>© 2026 - Oculus Reborn - Todos los derechos reservados</span>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/minumero" target="_blank" class="whatsapp-float js-wa-link" aria-label="Contactar por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <script src="js/config.js?v=13"></script>
+  <script src="js/util.js?v=13"></script>
+  <script src="js/whatsapp.js?v=13"></script>
+  <script src="js/carrito.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
+</body>
+</html>
