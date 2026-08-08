@@ -239,7 +239,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .carrito-item__precio { font-size: 14px; color: var(--color-primario); font-weight: 700; }
 
 .carrito-qty {
-  display: none; /*flex;*/
+  display: flex; /*flex;none;*/
   align-items: center;
   border: 1.5px solid var(--color-borde);
   border-radius: 6px;
