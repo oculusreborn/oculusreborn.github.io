@@ -1,5 +1,6 @@
 
 const CARRITO_KEY = 'mi_tienda_carrito';
+const LANGUAGE = CONFIG.language;
 
 function obtenerCarrito() {
   try { return JSON.parse(localStorage.getItem(CARRITO_KEY)) || []; }
@@ -112,7 +113,11 @@ function renderizarCarrito() {
         <span class="carrito-item__nombre">${escaparHTML(i.nombre)}</span>
         <span class="carrito-item__id">${escaparHTML(i.id)}</span>
         <div class="carrito-item__fila">
-          <span class="carrito-item__precio">$ ${i.precio.toLocaleString('es-CO')}</span>
+        ${MOSTRAR_PRECIOS ? `
+        <span class="carrito-item__precio">
+          $ ${i.precio.toLocaleString(CONFIG.language)}
+        </span>
+        ` : ''}
           <div class="carrito-qty">
             <button onclick="cambiarCantidadCarrito('${escaparArg(i.id)}', -1)" aria-label="Restar">−</button>
             <span>${i.cantidad}</span>
@@ -127,8 +132,16 @@ function renderizarCarrito() {
   }).join('');
 
   const totalEl = document.getElementById('carrito-total');
-  if (totalEl) totalEl.textContent = '$ ' + totalCarrito().toLocaleString('es-CO');
-  if (footer) footer.style.display = 'block';
+
+if (MOSTRAR_PRECIOS) {
+  if (totalEl) {
+    totalEl.textContent = '$ ' + totalCarrito().toLocaleString(CONFIG.language);
+  }
+}
+
+if (footer) {
+  footer.style.display = 'block';
+}
 }
 
 function enviarCotizacion() {
@@ -136,13 +149,27 @@ function enviarCotizacion() {
   if (items.length === 0) return;
 
   let msg = 'Hola, me gustaría cotizar estos productos:\n\n';
-  items.forEach(i => {
-    msg += `• ${i.nombre} (${i.id}) x${i.cantidad} = L ${(i.precio * i.cantidad).toLocaleString('es-CO')}\n`;
-  });
-  msg += `\nTotal estimado: $ ${totalCarrito().toLocaleString('es-CO')}`;
 
-  const numero = (typeof WA_NUMERO !== 'undefined') ? WA_NUMERO : CONFIG.whatsapp;
-  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
+  items.forEach(i => {
+    if (MOSTRAR_PRECIOS) {
+      msg += `• ${i.nombre} (${i.id}) x${i.cantidad} = $ ${(i.precio * i.cantidad).toLocaleString(CONFIG.language)}\n`;
+    } else {
+      msg += `• ${i.nombre} (${i.id}) x${i.cantidad}\n`;
+    }
+  });
+
+  if (MOSTRAR_PRECIOS) {
+    msg += `\nTotal estimado: $ ${totalCarrito().toLocaleString(CONFIG.language)}`;
+  }
+
+  const numero = (typeof WA_NUMERO !== 'undefined')
+    ? WA_NUMERO
+    : CONFIG.whatsapp;
+
+  window.open(
+    `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`,
+    '_blank'
+  );
 }
 
 let toastTimer;
@@ -169,10 +196,12 @@ function inyectarUICarrito() {
       </div>
       <div class="carrito-panel__items" id="carrito-items"></div>
       <div class="carrito-panel__footer" id="carrito-footer" style="display:none;">
-        <div class="carrito-panel__total">
+      ${MOSTRAR_PRECIOS ? `
+      <div class="carrito-panel__total">
           <span>Total estimado:</span>
           <strong id="carrito-total">$ 0</strong>
-        </div>
+      </div>
+      ` : ''}
         <button class="carrito-panel__enviar" onclick="enviarCotizacion()">
           <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Enviar cotización por WhatsApp

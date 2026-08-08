@@ -3,6 +3,7 @@ const CACHE_KEY = 'mi_tienda_productos';
 const CACHE_KEY_BANNERS = 'mi_tienda_banners';
 const CACHE_TTL = 30 * 60 * 1000;
 const API_URL = CONFIG.apiUrl;
+const MOSTRAR_PRECIOS = CONFIG.mostrarPrecios;
 
 let todosLosProductos = [];
 let categoriaActiva = 'Todos';
@@ -88,19 +89,28 @@ async function cargarProductos() {
 
   if (cache) {
     todosLosProductos = cache;
+
+    seleccionarCategoriaDesdeStorage();
+
     construirCategorias();
     renderizarTodo();
-    revalidarProductos(); 
+    revalidarProductos();
     return;
   }
 
   mostrarCargando();
+
   try {
     const datos = await obtenerProductosFrescos();
+
     todosLosProductos = datos;
     guardarCache(datos);
+
+    seleccionarCategoriaDesdeStorage();
+
     construirCategorias();
     renderizarTodo();
+
   } catch (error) {
     console.error('Error cargando productos:', error);
     mostrarError();
@@ -270,6 +280,21 @@ function filtrarProductos() {
   });
 }
 
+function seleccionarCategoriaDesdeStorage() {
+  const categoriaGuardada = sessionStorage.getItem('categoriaSeleccionada');
+
+  if (!categoriaGuardada) return;
+
+  const categoria = todosLosProductos.find(
+    p => (p.categoria || '').trim() === categoriaGuardada.trim()
+  )?.categoria;
+
+  if (categoria) {
+    categoriaActiva = categoria.trim();
+  }
+
+  sessionStorage.removeItem('categoriaSeleccionada');
+}
 
 function renderizarTodo() {
   const productos = filtrarProductos();
@@ -444,62 +469,126 @@ function actualizarContador(total) {
 
 function crearCardHTML(producto) {
   const tieneOferta = producto.precio_anterior && producto.precio_anterior > producto.precio;
+
   const descuento = tieneOferta
     ? Math.round((1 - producto.precio / producto.precio_anterior) * 100)
     : 0;
 
   const fotoID = extraerIdDrive(producto.foto1);
-  const fotoURL = producto.foto1 ? convertirLinkDrive(producto.foto1, 600) : null;
+  const fotoURL = producto.foto1
+    ? convertirLinkDrive(producto.foto1, 600)
+    : null;
 
   const fotoHTML = fotoURL
-    ? `<img src="${escaparHTML(fotoURL)}" alt="${escaparHTML(producto.nombre)}" loading="lazy" onerror="manejarErrorFoto(this, '${escaparArg(fotoID || '')}')">`
+    ? `<img src="${escaparHTML(fotoURL)}"
+            alt="${escaparHTML(producto.nombre)}"
+            loading="lazy"
+            onerror="manejarErrorFoto(this, '${escaparArg(fotoID || '')}')">`
     : iconoSinFoto();
 
   const regaliaHTML = producto.regalia
     ? `<div class="regalia-overlay">
-        <img src="${escaparHTML(convertirLinkDrive(producto.regalia, 200))}" alt="Regalo incluido" class="regalia-overlay__img" loading="lazy">
-      </div>`
+         <img src="${escaparHTML(convertirLinkDrive(producto.regalia, 200))}"
+              alt="Regalo incluido"
+              class="regalia-overlay__img"
+              loading="lazy">
+       </div>`
     : '';
 
-  const badgeOferta = tieneOferta
-    ? `<span class="producto-card__badge producto-card__badge--oferta">-${descuento}%</span>`
+  const badgeOferta = (MOSTRAR_PRECIOS && tieneOferta)
+    ? `<span class="producto-card__badge producto-card__badge--oferta">
+         -${descuento}%
+       </span>`
     : '';
 
   const badgeDestacado = (producto.destacado === true || producto.destacado === 'TRUE')
-    ? `<span class="producto-card__badge producto-card__badge--destacado">⭐ Destacado</span>`
+    ? `<span class="producto-card__badge producto-card__badge--destacado">
+         ⭐ Destacado
+       </span>`
     : '';
 
   const precioAnterior = tieneOferta
-    ? `<span class="producto-card__precio-anterior">$ ${producto.precio_anterior.toLocaleString('es-CO')}</span>`
+    ? `<span class="producto-card__precio-anterior">
+         $ ${producto.precio_anterior.toLocaleString(CONFIG.language)}
+       </span>`
+    : '';
+
+  const preciosHTML = MOSTRAR_PRECIOS
+    ? `
+      <div class="producto-card__precios">
+        <span class="producto-card__precio ${tieneOferta ? 'producto-card__precio--oferta' : ''}">
+          $ ${producto.precio.toLocaleString(CONFIG.language)}
+        </span>
+        ${precioAnterior}
+      </div>
+    `
     : '';
 
   const agotado = estaAgotado(producto.cantidad);
   const stockHTML = etiquetaStock(producto.cantidad);
 
   const botonHTML = agotado
-    ? `<button class="producto-card__btn-cotizar producto-card__btn-cotizar--agotado" disabled onclick="event.stopPropagation();">
+    ? `<button class="producto-card__btn-cotizar producto-card__btn-cotizar--agotado"
+          disabled
+          onclick="event.stopPropagation();">
           Agotado
-        </button>`
-    : `<button class="producto-card__btn-cotizar" onclick="event.stopPropagation(); agregarAlCarrito('${escaparArg(producto.id)}', '${escaparArg(producto.nombre)}', ${producto.precio}, 1, '${escaparArg(fotoURL || '')}', ${producto.cantidad === null ? 'null' : producto.cantidad})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+       </button>`
+    : `<button class="producto-card__btn-cotizar"
+          onclick="event.stopPropagation(); agregarAlCarrito(
+            '${escaparArg(producto.id)}',
+            '${escaparArg(producto.nombre)}',
+            ${producto.precio},
+            1,
+            '${escaparArg(fotoURL || '')}',
+            ${producto.cantidad === null ? 'null' : producto.cantidad}
+          )">
+          <svg viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               width="16"
+               height="16">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
           Añadir a cotización
-        </button>`;
+       </button>`;
 
   return `
-    <div class="producto-card" onclick="window.location='producto.html?id=${escaparArg(producto.id)}'">
+    <div class="producto-card"
+         onclick="window.location='producto.html?id=${escaparArg(producto.id)}'">
+
       ${badgeOferta}
       ${badgeDestacado}
-      <div class="producto-card__foto">${fotoHTML}${regaliaHTML}</div>
-      <div class="producto-card__info">
-        <span class="producto-card__categoria">${escaparHTML(producto.categoria)} · <span style="font-weight:600;color:#1B3A6B;">${escaparHTML(producto.id)}</span></span>
-        <h3 class="producto-card__nombre">${escaparHTML(producto.nombre)}</h3>
-        <div class="producto-card__precios">
-          <span class="producto-card__precio ${tieneOferta ? 'producto-card__precio--oferta' : ''}">$ ${producto.precio.toLocaleString('es-CO')}</span>
-          ${precioAnterior}
-        </div>
-        ${stockHTML}
-        ${botonHTML}
+
+      <div class="producto-card__foto">
+        ${fotoHTML}
+        ${regaliaHTML}
       </div>
+
+      <div class="producto-card__info">
+
+        <span class="producto-card__categoria">
+          ${escaparHTML(producto.categoria)}
+          ·
+          <span style="font-weight:600;color:#1B3A6B;">
+            ${escaparHTML(producto.id)}
+          </span>
+        </span>
+
+        <h3 class="producto-card__nombre">
+          ${escaparHTML(producto.nombre)}
+        </h3>
+
+        ${preciosHTML}
+
+        ${stockHTML}
+
+        ${botonHTML}
+
+      </div>
+
     </div>
   `;
 }
