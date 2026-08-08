@@ -277,7 +277,7 @@
 
     .pdp__compra { display: flex; gap: 10px; align-items: stretch; }
     .pdp__qty {
-      display: none; align-items: center; border: 1.5px solid var(--color-borde);
+      display: flex; align-items: center; border: 1.5px solid var(--color-borde);
       border-radius: 8px; overflow: hidden; flex-shrink: 0;
     }
     .pdp__qty button {
@@ -391,7 +391,7 @@
     </div>
   </section>
 
-  <a href="https://wa.me/50494785701" target="_blank" class="whatsapp-float js-wa-link" aria-label="WhatsApp">
+  <a href="https://wa.me/573015636533" target="_blank" class="whatsapp-float js-wa-link" aria-label="WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
     </svg>
@@ -405,6 +405,7 @@
   <script>
     const CACHE_KEY = 'mi_tienda_productos';
     const API_URL = CONFIG.apiUrl;
+    const MOSTRAR_PRECIOS = CONFIG.mostrarPrecios;
     let TODOS = [];
     let PRODUCTO_ACTUAL = null;
 
@@ -518,7 +519,17 @@
       const regaliaHTML = p.regalia
         ? `<div class="regalia-overlay"><img src="${escaparHTML(convertirLinkDrive(p.regalia, 200))}" alt="Regalo incluido" class="regalia-overlay__img" loading="lazy"></div>`
         : '';
-      const precioAnt = oferta ? `<span class="producto-card__precio-anterior">$ ${p.precio_anterior.toLocaleString('es-CO')}</span>` : '';
+      const precioAnt = oferta ? `<span class="producto-card__precio-anterior">$ ${p.precio_anterior.toLocaleString(CONFIG.language)}</span>` : '';
+      const preciosHTML = MOSTRAR_PRECIOS
+  ? `
+      <div class="producto-card__precios">
+        <span class="producto-card__precio ${oferta ? 'producto-card__precio--oferta' : ''}">
+          $ ${p.precio.toLocaleString(CONFIG.language)}
+        </span>
+        ${precioAnt}
+      </div>
+    `
+  : '';
       const agotadoRel = estaAgotado(p.cantidad);
       const stockRel = etiquetaStock(p.cantidad);
       const botonRel = agotadoRel
@@ -529,15 +540,14 @@
             </button>`;
       return `
         <div class="producto-card" onclick="window.location='producto.html?id=${escaparArg(p.id)}'">
-          ${oferta ? `<span class="producto-card__badge producto-card__badge--oferta">-${desc}%</span>` : ''}
+          ${(MOSTRAR_PRECIOS && oferta)
+            ? `<span class="producto-card__badge producto-card__badge--oferta">-${desc}%</span>`
+            : ''}
           <div class="producto-card__foto">${fotoHTML}${regaliaHTML}</div>
           <div class="producto-card__info">
             <span class="producto-card__categoria">${escaparHTML(p.categoria)} · <span style="font-weight:600;color:#1B3A6B;">${escaparHTML(p.id)}</span></span>
             <h3 class="producto-card__nombre">${escaparHTML(p.nombre)}</h3>
-            <div class="producto-card__precios">
-              <span class="producto-card__precio ${oferta ? 'producto-card__precio--oferta' : ''}">$ ${p.precio.toLocaleString('es-CO')}</span>
-              ${precioAnt}
-            </div>
+            ${preciosHTML}
             ${stockRel}
             ${botonRel}
           </div>
@@ -559,7 +569,7 @@
 
       const fechaFin = parsearFecha(p.final_oferta);
       const mostrarTimer = fechaFin && fechaFin.getTime() > Date.now();
-      const timerHTML = mostrarTimer ? `
+      const timerHTML = (MOSTRAR_PRECIOS && mostrarTimer) ? `
         <div class="pdp__timer" id="oferta-timer">
           <span class="pdp__timer__label">⏰ La oferta termina en:</span>
           <div class="pdp__timer__cajas">
@@ -570,14 +580,14 @@
           </div>
         </div>` : '';
 
-      const badges = tieneOferta ? `
+        const badges = (MOSTRAR_PRECIOS && tieneOferta) ? `
         <div class="pdp__badges">
-          <span class="pdp__ahorro">Ahorras $ ${ahorro.toLocaleString('es-CO')}</span>
+          <span class="pdp__ahorro">Ahorras $ ${ahorro.toLocaleString(CONFIG.language)}</span>
           <span class="pdp__off">${descuento}% OFF</span>
         </div>` : '';
 
-      const precioAnterior = tieneOferta
-        ? `<span class="producto-info__precio-anterior">$ ${p.precio_anterior.toLocaleString('es-CO')}</span>`
+        const precioAnterior = (MOSTRAR_PRECIOS && tieneOferta)
+        ? `<span class="producto-info__precio-anterior">$ ${p.precio_anterior.toLocaleString(CONFIG.language)}</span>`
         : '';
 
       document.getElementById('detalle-contenedor').innerHTML = `
@@ -600,7 +610,9 @@
           <nav class="breadcrumb" aria-label="Ruta">
             <a href="index.html">Inicio</a>
             <span>›</span>
-            <a href="index.html">${escaparHTML(p.categoria)}</a>
+            <a href="index.html" onclick="sessionStorage.setItem('categoriaSeleccionada', '${escaparArg(p.categoria)}')">
+            ${escaparHTML(p.categoria)}
+            </a>
             <span>›</span>
             <span>${escaparHTML(p.nombre)}</span>
           </nav>
@@ -609,10 +621,14 @@
 
           ${badges}
 
-          <div class="producto-info__precios">
-            <span class="producto-info__precio ${tieneOferta ? 'producto-info__precio--oferta' : ''}">$ ${p.precio.toLocaleString('es-CO')}</span>
-            ${precioAnterior}
-          </div>
+          ${MOSTRAR_PRECIOS ? `
+            <div class="producto-info__precios">
+              <span class="producto-info__precio ${tieneOferta ? 'producto-info__precio--oferta' : ''}">
+                $ ${p.precio.toLocaleString(CONFIG.language)}
+              </span>
+              ${precioAnterior}
+            </div>
+            ` : ''}
           ${stockDetalleHTML}
 
           <div class="producto-info__servicios">
